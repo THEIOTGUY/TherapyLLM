@@ -33,11 +33,13 @@ async def make_request():
         url = 'http://localhost:8011/A2F/A2E/SetEmotionByName'
         response = await client.post(url, json=text)
         return response
-def get_tts(output):
+def get_tts(output1):
     #output = GoogleTranslator(source='auto', target='hi').translate(output)
-    tts = gTTS(output)
+    tts = gTTS(output1)
     tts.save(r"C:\Users\vaida\text-generation-webui\audio_file_folder\welcome2.wav")
     print("got tts")
+    os.system(r"python C:\Users\vaida\AppData\Local\ov\pkg\audio2face-2023.1.1\exts\omni.audio2face.player\omni\audio2face\player\scripts\streaming_server\test_client.py C:\Users\vaida\text-generation-webui\audio_file_folder\welcome2.wav /World/audio2face/PlayerStreaming")
+    os.remove(r"C:\Users\vaida\text-generation-webui\audio_file_folder\welcome2.wav")
 async def run(user_input, history):
     # Note: the selected defaults change from time to time.
     request = {
@@ -114,16 +116,27 @@ async def run(user_input, history):
 
 async def print_response_stream(user_input, history):
     cur_len = 0
-    a=""
+    output1 = ''
+    print("Thinking...")
     async for new_history in run(user_input, history):
         cur_message = new_history['visible'][-1][1][cur_len:]
         cur_len += len(cur_message)
         #print(html.unescape(cur_message), end='')
-        a = a + html.unescape(cur_message)
+        output = html.unescape(cur_message)
+        output1 = output1 + output
+        if output == "." :
+            print(output1)
+            get_tts(output1)
+            print("Line ________________")
+            et = time.time()
+
+            # get the execution time
+            elapsed_time = et - st
+            print('Execution time:', elapsed_time, 'seconds')
+            output1 = ''
         sys.stdout.flush()  # If we don't flush, we won't see tokens in realtime.
-    return a.splitlines()[0]
-    # a = a.splitlines()[0]
-    # print(a)
+    print(output1)
+    get_tts(output1)
 def speech_to_text():
     r = sr.Recognizer()
     with sr.Microphone() as source:
@@ -152,28 +165,6 @@ if __name__ == '__main__':
         # arr = [user_input, 'Surely, here is']
         # history = {'internal': [arr], 'visible': [arr]}
 
-        a = asyncio.run(print_response_stream(user_input, history))
-        text = " INPUT : ",user_input + " ,OUTPUT : " + a
-        sent_1 = sentiment.polarity_scores(text)
-        neg = float(sent_1["neg"])
-        pos = float(sent_1["pos"])
-        text = {"a2f_instance": "/World/audio2face/CoreFullface", "emotions": {"joy": 0, "sadness": 0}}
-        text["emotions"]["joy"] = pos
-        text["emotions"]["sadness"] = neg
-        print("sending emotions")
-        response = asyncio.run(make_request())
-        print("emotions sent")
-        print(text)
-        print("gettings tts")
-        print(a)
-        get_tts(a)
-        # get the end time
-        et = time.time()
+        asyncio.run(print_response_stream(user_input, history))
 
-        # get the execution time
-        elapsed_time = et - st
-        print('Execution time:', elapsed_time, 'seconds')
-        os.system(r"python C:\Users\vaida\AppData\Local\ov\pkg\audio2face-2023.1.1\exts\omni.audio2face.player\omni\audio2face\player\scripts\streaming_server\test_client.py C:\Users\vaida\text-generation-webui\audio_file_folder\welcome2.wav /World/audio2face/PlayerStreaming")
-        os.remove(r"C:\Users\vaida\text-generation-webui\audio_file_folder\welcome2.wav")
-        print("got tts")
 
