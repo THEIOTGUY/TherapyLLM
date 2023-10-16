@@ -8,6 +8,7 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from gtts import gTTS
 import os
 import time
+import keyboard
 sentiment = SentimentIntensityAnalyzer()
 import keyboard
 # import firebase_admin
@@ -18,7 +19,6 @@ import keyboard
 #         'databaseURL':'https://gen-lang-client-0134427173-default-rtdb.firebaseio.com'
 #     })
 #     return db.reference("/")
-
 import websockets
 
 #For local streaming, the websockets are hosted without ssl - ws://
@@ -27,6 +27,19 @@ URI = f'ws://{HOST}/api/v1/chat-stream'
 
 # For reverse-proxied streaming, the remote will likely host with ssl - wss://
 # URI = 'wss://your-uri-here.trycloudflare.com/api/v1/stream'
+def speech_to_text():
+    r = sr.Recognizer()
+    with sr.Microphone() as source:
+        print("Speak:")
+        audio = r.listen(source)
+    try:
+        a = r.recognize_google(audio)
+        print("You said: " + a)
+        return a
+    except sr.UnknownValueError:
+        print("Could not understand audio")
+    except sr.RequestError as e:
+        print("Could not request results; {0}".format(e))
 
 async def make_request():
     async with httpx.AsyncClient() as client:
@@ -38,6 +51,19 @@ def get_tts(output1):
     tts = gTTS(output1)
     tts.save(r"C:\Users\vaida\text-generation-webui\audio_file_folder\welcome2.wav")
     print("got tts")
+    text = " INPUT : ", user_input + " ,OUTPUT : " + output1
+    sent_1 = sentiment.polarity_scores(text)
+    neg = float(sent_1["neg"])
+    pos = float(sent_1["pos"])
+    text = {"a2f_instance": "/World/audio2face/CoreFullface", "emotions": {"joy": 0, "sadness": 0}}
+    text["emotions"]["joy"] = pos
+    text["emotions"]["sadness"] = neg
+    print("sending emotions")
+    text = json.dumps(text)
+    text1 = text.replace("\"", "\\\"")
+    wholetext = "curl -X \"POST\" \ \"http://localhost:8011/A2F/A2E/SetEmotionByName\" \ -H \"accept: application/json\" \ -H \"Content-Type: application/json\" \ -d \"{}\"".format(text1)
+    os.system(wholetext)
+    print("emotions sent")
     os.system(r"python C:\Users\vaida\AppData\Local\ov\pkg\audio2face-2023.1.1\exts\omni.audio2face.player\omni\audio2face\player\scripts\streaming_server\test_client.py C:\Users\vaida\text-generation-webui\audio_file_folder\welcome2.wav /World/audio2face/PlayerStreaming")
     os.remove(r"C:\Users\vaida\text-generation-webui\audio_file_folder\welcome2.wav")
 async def run(user_input, history):
@@ -124,19 +150,18 @@ async def print_response_stream(user_input, history):
         #print(html.unescape(cur_message), end='')
         output = html.unescape(cur_message)
         output1 = output1 + output
-        if output == "." :
+        if output == "." and output1.count("") > 200 or output1.count("") > 350:
             print(output1)
             get_tts(output1)
             print("Line ________________")
-            et = time.time()
-
-            # get the execution time
-            elapsed_time = et - st
-            print('Execution time:', elapsed_time, 'seconds')
             output1 = ''
         sys.stdout.flush()  # If we don't flush, we won't see tokens in realtime.
     print(output1)
-    get_tts(output1)
+    try:
+        output1 = "\n".join(x for x in output1.splitlines() if "USER:" not in x)
+        get_tts(output1)
+    except:
+        pass
 def speech_to_text():
     r = sr.Recognizer()
     with sr.Microphone() as source:
@@ -154,17 +179,26 @@ def speech_to_text():
     return user_input
 if __name__ == '__main__':
     while True:
-        user_input=input("Enter prompt : ")
-        st = time.time()
-        # if keyboard.read_key() == "play/pause media":
-        #     user_input = speech_to_text()
-        # Basic example
-        history = {'internal': [], 'visible': []}
+        event = keyboard.read_event()
+        if event.name == "play/pause media":
+            user_input = speech_to_text()
+            # if keyboard.read_key() == "play/pause media":
+            #     user_input = speech_to_text()
+            # Basic example
+            history = {'internal': [], 'visible': []}
 
-        # "Continue" example. Make sure to set '_continue' to True above
-        # arr = [user_input, 'Surely, here is']
-        # history = {'internal': [arr], 'visible': [arr]}
+            # "Continue" example. Make sure to set '_continue' to True above
+            # arr = [user_input, 'Surely, here is']
+            # history = {'internal': [arr], 'visible': [arr]}
 
-        asyncio.run(print_response_stream(user_input, history))
+            asyncio.run(print_response_stream(user_input, history))
+        else:
+            history = {'internal': [], 'visible': []}
+            user_input = input("Enter : ")
+            # "Continue" example. Make sure to set '_continue' to True above
+            # arr = [user_input, 'Surely, here is']
+            # history = {'internal': [arr], 'visible': [arr]}
+
+            asyncio.run(print_response_stream(user_input, history))
 
 
