@@ -1,52 +1,112 @@
-import httpx
-import asyncio
-import html
-import json
-import sys
+from selenium import webdriver	 
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+# For using sleep function because selenium 
+# works only when the all the elements of the 
+# page is loaded.
+import time 
 import speech_recognition as sr
-from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
-from gtts import gTTS
+import json
+import firebase_admin
 import os
-import time
 import keyboard
+from firebase_admin import db
+cred_obj = firebase_admin.credentials.Certificate(r"C:\Users\vaida\Downloads\large-languge-model-firebase-adminsdk-spyw1-321f207473.json")
+default_app = firebase_admin.initialize_app(cred_obj, {'databaseURL':"https://large-languge-model-default-rtdb.firebaseio.com/"})
+ref = db.reference("/")
+data=ref.set({"output":"hi","input":"hi"})
+from selenium.webdriver.common.keys import Keys 
+from selenium.webdriver.common.by import By
+import html
+from gtts import gTTS
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 sentiment = SentimentIntensityAnalyzer()
-import keyboard
-# import firebase_admin
-# from firebase_admin import db
-# def initialize_firebase():
-#     cred_obj = firebase_admin.credentials.Certificate(r"C:\Users\vaida\Downloads\gen-lang-client-0134427173-firebase-adminsdk-vdatl-34e7edafaa.json")
-#     default_app = firebase_admin.initialize_app(cred_obj, {
-#         'databaseURL':'https://gen-lang-client-0134427173-default-rtdb.firebaseio.com'
-#     })
-#     return db.reference("/")
-import websockets
+import subprocess
+working_directory = r"C:\Users\vaida\text-generation-webui"
+python_path = r"C:\Users\vaida\.conda\envs\textgen\python.exe"
+script_path1 = r"C:\Users\vaida\OneDrive\Desktop\python files\chatpgtreportpdf.py"
+script_path2 = r"C:\Users\vaida\AppData\Local\ov\pkg\audio2face-2023.1.1\exts\omni.audio2face.player\omni\audio2face\player\scripts\streaming_server\test_client.py"
+audio_file_path = r"C:\Users\vaida\text-generation-webui\audio_file_folder\welcome2.wav"
+streaming_path = "/World/audio2face/PlayerStreaming"
+script_path = r"server.py"  # Assuming server.py is in the working directory
+model_path = r"C:\Users\vaida\text-generation-webui\models\Ayush2312_llama2-7B-1k-TherapyData"
+command1 = [python_path, script_path1]
+command2 = [python_path, script_path2, audio_file_path, streaming_path]
+# Creating an instance webdriver
+def takeCommand():
+    recognizer = sr.Recognizer()
 
-#For local streaming, the websockets are hosted without ssl - ws://
-HOST = 'localhost:5005'
-URI = f'ws://{HOST}/api/v1/chat-stream'
-
-# For reverse-proxied streaming, the remote will likely host with ssl - wss://
-# URI = 'wss://your-uri-here.trycloudflare.com/api/v1/stream'
-def speech_to_text():
-    r = sr.Recognizer()
-    with sr.Microphone() as source:
-        print("Speak:")
-        audio = r.listen(source)
     try:
-        a = r.recognize_google(audio)
-        print("You said: " + a)
-        return a
-    except sr.UnknownValueError:
-        print("Could not understand audio")
-    except sr.RequestError as e:
-        print("Could not request results; {0}".format(e))
+        with sr.Microphone() as source:
+            print("Listening...")
+            recognizer.adjust_for_ambient_noise(source, duration=1)
+            audio = recognizer.listen(source, timeout=5)
 
-async def make_request():
-    async with httpx.AsyncClient() as client:
-        url = 'http://localhost:8011/A2F/A2E/SetEmotionByName'
-        response = await client.post(url, json=text)
-        return response
-def get_tts(output1):
+        command = recognizer.recognize_google(audio)
+        print("You said:", command)
+
+    except sr.UnknownValueError:
+        print("Google Speech Recognition could not understand audio")
+        command = ""
+    except sr.RequestError as e:
+        print(f"Could not request results from Google Speech Recognition service; {e}")
+        command = "What you think we should talk about"
+
+    return command
+def run_server(working_directory, python_path, script_path, model_path):
+    # Change working directory
+    process = subprocess.Popen(f'cd /d "{working_directory}" && {python_path} {script_path} --model "{model_path}" --load-in-4bit --use_double_quant --share',shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+    time.sleep(30)
+    browser = webdriver.Firefox() 
+    browser.get('http://127.0.0.1:7860/')
+    # Let's the user see and also load the element 
+    time.sleep(15)
+    user = browser.find_elements(By.XPATH, '//*[@id="chat-input"]/label/textarea')
+    # Simulate some work in the main script
+    try:
+        while True:
+            in_old = ref.get()["input"]
+            out_old = ref.get()["output"]
+            user_input = userinput(in_old)
+            import openai 
+            openai.api_key = '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'
+            messages = [ {"role": "system", "content":  
+                        "You are a intelligent assistant."} ] 
+            while True:  
+                if user_input: 
+                    user_check = """Check if i am asking you to create Therapy Session report if you think yes Then 
+                    reply with "YES" otherwise reply with "NO" :- """ + user_input + "}"
+                    messages.append( 
+                        {"role": "user", "content": user_check}, 
+                    ) 
+                    chat = openai.ChatCompletion.create( 
+                        model="gpt-3.5-turbo", messages=messages 
+                    ) 
+                reply = chat.choices[0].message.content 
+                #print(f"ChatGPT: {reply}") 
+                if reply=="YES":
+                    print("Creating Therapy Session Report")
+                    subprocess.run(command1, shell=True)
+                    user_input="Thanks for this conversation, Bye :)"
+                break
+            user[0].send_keys(user_input)
+            userbtn = browser.find_element(By.XPATH, '//*[@id="Generate"]')
+            userbtn.click()
+            output1 = output(out_old)
+            get_tts(output1,user_input)
+    # closing the browser
+    #browser.close()
+    except KeyboardInterrupt:
+        # Handle keyboard interrupt (Ctrl+C)
+        print("Exiting script...")
+        process_name = "python.exe"
+
+        # Employing the taskkill command to terminate the process
+        result = os.system(f"taskkill /f /im {process_name}")
+
+def get_tts(output1,user_input):
     #output = GoogleTranslator(source='auto', target='hi').translate(output)
     tts = gTTS(output1)
     tts.save(r"C:\Users\vaida\text-generation-webui\audio_file_folder\welcome2.wav")
@@ -64,141 +124,33 @@ def get_tts(output1):
     wholetext = "curl -X \"POST\" \ \"http://localhost:8011/A2F/A2E/SetEmotionByName\" \ -H \"accept: application/json\" \ -H \"Content-Type: application/json\" \ -d \"{}\"".format(text1)
     os.system(wholetext)
     print("emotions sent")
-    os.system(r"python C:\Users\vaida\AppData\Local\ov\pkg\audio2face-2023.1.1\exts\omni.audio2face.player\omni\audio2face\player\scripts\streaming_server\test_client.py C:\Users\vaida\text-generation-webui\audio_file_folder\welcome2.wav /World/audio2face/PlayerStreaming")
+    subprocess.run(command2, shell=True)
     os.remove(r"C:\Users\vaida\text-generation-webui\audio_file_folder\welcome2.wav")
-async def run(user_input, history):
-    # Note: the selected defaults change from time to time.
-    request = {
-        'user_input': user_input,
-        'max_new_tokens': 250,
-        'auto_max_new_tokens': False,
-        'max_tokens_second': 0,
-        'history': history,
-        'mode': 'instruct',  # Valid options: 'chat', 'chat-instruct', 'instruct'
-        'character': 'Example',
-        'instruction_template': 'Vicuna-v1.1',  # Will get autodetected if unset
-        'your_name': 'You',
-        # 'name1': 'name of user', # Optional
-        # 'name2': 'name of character', # Optional
-        # 'context': 'character context', # Optional
-        # 'greeting': 'greeting', # Optional
-        # 'name1_instruct': 'You', # Optional
-        # 'name2_instruct': 'Assistant', # Optional
-        # 'context_instruct': 'context_instruct', # Optional
-        # 'turn_template': 'turn_template', # Optional
-        'regenerate': False,
-        '_continue': False,
-        'chat_instruct_command': 'Continue the chat dialogue below. Write a single reply for the character "<|character|>".\n\n<|prompt|>',
 
-        # Generation params. If 'preset' is set to different than 'None', the values
-        # in presets/preset-name.yaml are used instead of the individual numbers.
-        'preset': 'None',
-        'do_sample': True,
-        'temperature': 0.7,
-        'top_p': 0.1,
-        'typical_p': 1,
-        'epsilon_cutoff': 0,  # In units of 1e-4
-        'eta_cutoff': 0,  # In units of 1e-4
-        'tfs': 1,
-        'top_a': 0,
-        'repetition_penalty': 1.18,
-        'repetition_penalty_range': 0,
-        'top_k': 40,
-        'min_length': 0,
-        'no_repeat_ngram_size': 0,
-        'num_beams': 1,
-        'penalty_alpha': 0,
-        'length_penalty': 1,
-        'early_stopping': False,
-        'mirostat_mode': 0,
-        'mirostat_tau': 5,
-        'mirostat_eta': 0.1,
-        'grammar_string': '',
-        'guidance_scale': 1,
-        'negative_prompt': '',
-
-        'seed': -1,
-        'add_bos_token': True,
-        'truncation_length': 2048,
-        'ban_eos_token': False,
-        'custom_token_bans': '',
-        'skip_special_tokens': True,
-        'stopping_strings': []
-    }
-
-    async with websockets.connect(URI, ping_interval=None) as websocket:
-        await websocket.send(json.dumps(request))
-
-        while True:
-            incoming_data = await websocket.recv()
-            incoming_data = json.loads(incoming_data)
-
-            match incoming_data['event']:
-                case 'text_stream':
-                    yield incoming_data['history']
-                case 'stream_end':
-                    return
-
-
-async def print_response_stream(user_input, history):
-    cur_len = 0
-    output1 = ''
-    print("Thinking...")
-    async for new_history in run(user_input, history):
-        cur_message = new_history['visible'][-1][1][cur_len:]
-        cur_len += len(cur_message)
-        #print(html.unescape(cur_message), end='')
-        output = html.unescape(cur_message)
-        output1 = output1 + output
-        if output == "." and output1.count("") > 200 or output1.count("") > 350:
-            print(output1)
-            get_tts(output1)
-            print("Line ________________")
-            output1 = ''
-        sys.stdout.flush()  # If we don't flush, we won't see tokens in realtime.
-    print(output1)
-    try:
-        output1 = "\n".join(x for x in output1.splitlines() if "USER:" not in x)
-        get_tts(output1)
-    except:
-        pass
-def speech_to_text():
-    r = sr.Recognizer()
-    with sr.Microphone() as source:
-        print("Speak:")
-        audio = r.listen(source)
-    try:
-        s = r.recognize_google(audio)
-        print("You said: " + s)
-        return s
-    except sr.UnknownValueError:
-        print("Could not understand audio")
-        user_input = input("Enter Prompt")
-    except sr.RequestError as e:
-        print("Could not request results; {0}".format(e))
-    return user_input
-if __name__ == '__main__':
+def output(out_old):
     while True:
-        event = keyboard.read_event()
-        if event.name == "play/pause media":
-            user_input = speech_to_text()
-            # if keyboard.read_key() == "play/pause media":
-            #     user_input = speech_to_text()
-            # Basic example
-            history = {'internal': [], 'visible': []}
+        time.sleep(1)
+        out = ref.get()["output"]
+        if out_old != out:
+            # print(out)
+            break 
+    try:
+        out = html.unescape(out)
+    except Exception as e:
+        print(f"Error while unescaping HTML: {e}")
+    
+    print(out)
+    return out
+def userinput(in_old):
+    print("waiting for input....")
+    while True:
+        time.sleep(1)
+        in_new = ref.get()["input"]
+        if in_new!= in_old:
+            # print(out)
+            break
+    return in_new
 
-            # "Continue" example. Make sure to set '_continue' to True above
-            # arr = [user_input, 'Surely, here is']
-            # history = {'internal': [arr], 'visible': [arr]}
-
-            asyncio.run(print_response_stream(user_input, history))
-        else:
-            history = {'internal': [], 'visible': []}
-            user_input = input("Enter : ")
-            # "Continue" example. Make sure to set '_continue' to True above
-            # arr = [user_input, 'Surely, here is']
-            # history = {'internal': [arr], 'visible': [arr]}
-
-            asyncio.run(print_response_stream(user_input, history))
+run_server(working_directory, python_path, script_path, model_path)
 
 
