@@ -2,7 +2,7 @@ import speech_recognition as sr
 import firebase_admin
 from firebase_admin import db
 import keyboard
-cred_obj = firebase_admin.credentials.Certificate("/home/ayush/Downloads/large-languge-model-firebase-adminsdk-spyw1-321f207473.json")
+cred_obj = firebase_admin.credentials.Certificate("/home/ayush/projectA/large-languge-model-firebase-adminsdk-spyw1-321f207473.json")
 default_app = firebase_admin.initialize_app(cred_obj, {'databaseURL':"https://large-languge-model-default-rtdb.firebaseio.com/"})
 ref = db.reference("/")
 def takeCommand():
