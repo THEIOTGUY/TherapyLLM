@@ -20,7 +20,7 @@ def takeCommand():
 
     except sr.UnknownValueError:
         print("Google Speech Recognition could not understand audio")
-        command = ".."
+        command = "wenifuhwnevuw9eivuhnwsioefvjnk;wefnvw[eoifnvkefwepoi;flkedfr"
     except sr.RequestError as e:
         print(f"Could not request results from Google Speech Recognition service; {e}")
         command = "What do you think we should talk about"
