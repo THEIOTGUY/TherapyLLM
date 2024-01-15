@@ -3,9 +3,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-# For using sleep function because selenium 
-# works only when the all the elements of the 
-# page is loaded.
+
 import time 
 import speech_recognition as sr
 import json
@@ -30,11 +28,11 @@ script_path1 = r"C:\Users\vaida\OneDrive\Desktop\python files\chatpgtreportpdf.p
 script_path2 = r"C:\Users\vaida\AppData\Local\ov\pkg\audio2face-2023.1.1\exts\omni.audio2face.player\omni\audio2face\player\scripts\streaming_server\test_client.py"
 audio_file_path = r"C:\Users\vaida\text-generation-webui\audio_file_folder\welcome2.wav"
 streaming_path = "/World/audio2face/PlayerStreaming"
-script_path = r"server.py"  # Assuming server.py is in the working directory
+script_path = r"server.py" 
 model_path = r"C:\Users\vaida\text-generation-webui\models\Ayush2312_llama2-7B-1k-TherapyData"
 command1 = [python_path, script_path1]
 command2 = [python_path, script_path2, audio_file_path, streaming_path]
-# Creating an instance webdriver
+
 def takeCommand():
     recognizer = sr.Recognizer()
 
@@ -56,48 +54,46 @@ def takeCommand():
 
     return command
 def run_server(working_directory, python_path, script_path, model_path):
-    # Change working directory
+
     process = subprocess.Popen(f'cd /d "{working_directory}" && {python_path} {script_path} --model "{model_path}" --load-in-4bit --use_double_quant --share',shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-    time.sleep(30)
+    time.sleep(40)
     browser = webdriver.Firefox() 
     browser.get('http://127.0.0.1:7860/')
-    # Let's the user see and also load the element 
+
     time.sleep(15)
     user = browser.find_elements(By.XPATH, '//*[@id="chat-input"]/label/textarea')
-    # Simulate some work in the main script
+
     try:
         while True:
             in_old = ref.get()["input"]
             out_old = ref.get()["output"]
             user_input = userinput(in_old)
-            import openai 
-            openai.api_key = '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'
-            messages = [ {"role": "system", "content":  
-                        "You are a intelligent assistant."} ] 
-            while True:  
-                if user_input: 
-                    user_check = """Check if i am asking you to create Therapy Session report if you think yes Then 
-                    reply with "YES" otherwise reply with "NO" :- """ + user_input + "}"
-                    messages.append( 
-                        {"role": "user", "content": user_check}, 
-                    ) 
-                    chat = openai.ChatCompletion.create( 
-                        model="gpt-3.5-turbo", messages=messages 
-                    ) 
-                reply = chat.choices[0].message.content 
-                #print(f"ChatGPT: {reply}") 
-                if reply=="YES":
-                    print("Creating Therapy Session Report")
-                    subprocess.run(command1, shell=True)
-                    user_input="Thanks for this conversation, Bye :)"
-                break
+            # import openai 
+            # openai.api_key = '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'
+            # messages = [ {"role": "system", "content":  
+            #             "You are a intelligent assistant."} ] 
+            # while True:  
+            #     if user_input: 
+            #         user_check = """AYUSHTEXT="{user_input}", check if this AYUSHTEXT means create therapy session report, if it means create therapy session report then reply me with "YES" otherwise reply with "NO" remember your reply should be only one word "YES" or "NO" """.format(user_input=user_input)
+            #         messages.append( 
+            #             {"role": "user", "content": user_check}, 
+            #         ) 
+            #         chat = openai.ChatCompletion.create( 
+            #             model="gpt-3.5-turbo", messages=messages 
+            #         ) 
+            #     reply = chat.choices[0].message.content 
+            #     #print(f"ChatGPT: {reply}") 
+            #     if reply=="YES":
+            #         print("Creating Therapy Session Report")
+            #         subprocess.run(command1, shell=True)
+            #         user_input="Thanks for this conversation, Bye :)"
+            #     break
             user[0].send_keys(user_input)
             userbtn = browser.find_element(By.XPATH, '//*[@id="Generate"]')
             userbtn.click()
             output1 = output(out_old)
             get_tts(output1,user_input)
-    # closing the browser
-    #browser.close()
+
     except KeyboardInterrupt:
         # Handle keyboard interrupt (Ctrl+C)
         print("Exiting script...")
