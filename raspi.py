@@ -24,7 +24,6 @@ def takeCommand():
         command = "What you think we should talk about"
     return command
 while True:
-    print("Enter a")
     if input=="a":
         command = takeCommand()
         ref.update({"input":command})
