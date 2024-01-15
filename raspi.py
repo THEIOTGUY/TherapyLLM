@@ -24,7 +24,7 @@ def takeCommand():
         command = "What you think we should talk about"
     return command
 while True:
-    print("Press Enter")
-    keyboard.wait("space")
-    command = takeCommand()
-    ref.update({"input":command})
+    print("Enter a")
+    if input=="a":
+        command = takeCommand()
+        ref.update({"input":command})
