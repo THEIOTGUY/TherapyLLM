@@ -6,5 +6,6 @@ replace chat.py from modules folder from https://github.com/oobabooga/text-gener
 install ubuntu 23.10 server then create vnenv and then install pyaudio by : 
 ```
 sudo apt-get install portaudio19-dev python-pyaudio
+pip install pyaudio
 ```
 pyaudio is necessary for speechrecognition library
