@@ -1,0 +1,3 @@
+Speech_Recognition
+firebase_admin
+pyaudio

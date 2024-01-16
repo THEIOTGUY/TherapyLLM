@@ -3,13 +3,12 @@ import json
 import datetime
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
-
+import os
 e = datetime.datetime.now()
-openai.api_key = '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'
+openai.api_key = os.environ['API_KEY']
 Therapist = "Suzan"
 messages = [ {"role": "system", "content":  
               "You are a intelligent assistant."} ]
-import os
 import json
 
 def load_json_from_folder(folder_path):

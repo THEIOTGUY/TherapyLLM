@@ -23,7 +23,7 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 sentiment = SentimentIntensityAnalyzer()
 import subprocess
 import openai
-openai.api_key = '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'
+openai.api_key = os.environ['API_KEY']
 messages = [ {"role": "system", "content":  
             "You are a intelligent assistant."} ] 
 working_directory = r"C:\Users\vaida\text-generation-webui"
