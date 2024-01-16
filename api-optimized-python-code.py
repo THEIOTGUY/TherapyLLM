@@ -22,6 +22,10 @@ from gtts import gTTS
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 sentiment = SentimentIntensityAnalyzer()
 import subprocess
+import openai
+openai.api_key = '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'
+messages = [ {"role": "system", "content":  
+            "You are a intelligent assistant."} ] 
 working_directory = r"C:\Users\vaida\text-generation-webui"
 python_path = r"C:\Users\vaida\.conda\envs\textgen\python.exe"
 script_path1 = r"C:\Users\vaida\OneDrive\Desktop\GIT\TherapyLLM\TherapyReport.py"
@@ -67,27 +71,23 @@ def run_server(working_directory, python_path, script_path, model_path):
         while True:
             in_old = ref.get()["input"]
             out_old = ref.get()["output"]
-            user_input = userinput(in_old)
-            # import openai 
-            # openai.api_key = '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'
-            # messages = [ {"role": "system", "content":  
-            #             "You are a intelligent assistant."} ] 
-            # while True:  
-            #     if user_input: 
-            #         user_check = """AYUSHTEXT="{user_input}", check if this AYUSHTEXT means create therapy session report, if it means create therapy session report then reply me with "YES" otherwise reply with "NO" remember your reply should be only one word "YES" or "NO" """.format(user_input=user_input)
-            #         messages.append( 
-            #             {"role": "user", "content": user_check}, 
-            #         ) 
-            #         chat = openai.ChatCompletion.create( 
-            #             model="gpt-3.5-turbo", messages=messages 
-            #         ) 
-            #     reply = chat.choices[0].message.content 
-            #     #print(f"ChatGPT: {reply}") 
-            #     if reply=="YES":
-            #         print("Creating Therapy Session Report")
-            #         subprocess.run(command1, shell=True)
-            #         user_input="Thanks for this conversation, Bye :)"
-            #     break
+            user_input = userinput(in_old) 
+            while True:  
+                if user_input: 
+                    user_check = """AYUSHTEXT="{user_input}", check if this AYUSHTEXT means create therapy session report, if it means create therapy session report then reply me with "YES" otherwise reply with "NO" remember your reply should be only one word "YES" or "NO" """.format(user_input=user_input)
+                    messages.append( 
+                        {"role": "user", "content": user_check}, 
+                    ) 
+                    chat = openai.ChatCompletion.create( 
+                        model="gpt-3.5-turbo", messages=messages 
+                    ) 
+                reply = chat.choices[0].message.content 
+                #print(f"ChatGPT: {reply}") 
+                if reply=="YES":
+                    print("Creating Therapy Session Report")
+                    subprocess.run(command1, shell=True)
+                    user_input="Thanks for this conversation, Bye :)"
+                break
             user[0].send_keys(user_input)
             userbtn = browser.find_element(By.XPATH, '//*[@id="Generate"]')
             userbtn.click()
