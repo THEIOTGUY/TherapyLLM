@@ -7,7 +7,7 @@ This repository contains the code and resources for fine-tuning the Llama 2-7B l
 
 ### Introduction :
 
-The Real-Time Therapy Assistant combines the power of Llama 2-7B with a human-like animated character to enhance the therapeutic interaction experience. The visual aspect adds a personalized touch to the conversation, fostering a more engaging and supportive environment.
+The Real-Time Therapy Assistant combines the power of Llama 2-7B with a human-like animated character to enhance the therapeutic interaction experience. The visual aspect adds a personalized touch to the conversation, fostering a more engaging and supportive environment. Also it will create a personalized Therapy report based on the conversations
 
 ### Features :
 * Real-Time Conversations: Engage in dynamic, responsive conversations with users.
