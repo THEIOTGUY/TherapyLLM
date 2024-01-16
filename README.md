@@ -19,7 +19,7 @@ The Real-Time Therapy Assistant combines the power of Llama 2-7B with a human-li
 
 ### USAGE :
 * Run omniclientpython.py on remote laptop/PC and install and open omniclient on your computer, Enter the omniverse server code running in server into your omniverser client so you can see the animation in real-time
-* If using raspberrypi git clone this repo and then run the following commands and then run raspberrypi_Client.py using sudo command.
+* If using raspberrypi then install ubuntu 23.10 server then git clone this repo and then run the following commands and then run raspberrypi_Client.py using sudo command.
 ```
 sudo apt-get install libasound-dev portaudio19-dev libportaudio2 libportaudiocpp0
 pip install pyaudio
@@ -42,12 +42,5 @@ pip install -r requirementsRASPI.txt
 
 
 
-replace chat.py from modules folder from https://github.com/oobabooga/text-generation-webui.git with the chat.py given in repository
 
-### Raspberrypi:
-install ubuntu 23.10 server then create vnenv and then install pyaudio by : 
-```
-sudo apt-get install libasound-dev portaudio19-dev libportaudio2 libportaudiocpp0
-pip install pyaudio
-```
-pyaudio is necessary for speechrecognition library
+
