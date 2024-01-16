@@ -24,7 +24,7 @@ sentiment = SentimentIntensityAnalyzer()
 import subprocess
 working_directory = r"C:\Users\vaida\text-generation-webui"
 python_path = r"C:\Users\vaida\.conda\envs\textgen\python.exe"
-script_path1 = r"C:\Users\vaida\OneDrive\Desktop\python files\chatpgtreportpdf.py"
+script_path1 = r"C:\Users\vaida\OneDrive\Desktop\GIT\TherapyLLM\TherapyReport.py"
 script_path2 = r"C:\Users\vaida\AppData\Local\ov\pkg\audio2face-2023.1.1\exts\omni.audio2face.player\omni\audio2face\player\scripts\streaming_server\test_client.py"
 audio_file_path = r"C:\Users\vaida\text-generation-webui\audio_file_folder\welcome2.wav"
 streaming_path = "/World/audio2face/PlayerStreaming"
