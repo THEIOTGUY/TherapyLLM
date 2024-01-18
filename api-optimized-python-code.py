@@ -23,7 +23,7 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 sentiment = SentimentIntensityAnalyzer()
 import subprocess
 import openai
-openai.api_key = os.environ['API_KEY']
+openai.api_key = os.environ['CHATGPT_API']
 messages = [ {"role": "system", "content":  
             "You are a intelligent assistant."} ] 
 working_directory = r"C:\Users\vaida\text-generation-webui"
@@ -125,7 +125,7 @@ def get_tts(output1,user_input):
 
 def output(out_old):
     while True:
-        time.sleep(1)
+        #time.sleep(1)
         out = ref.get()["output"]
         if out_old != out:
             # print(out)
@@ -140,7 +140,7 @@ def output(out_old):
 def userinput(in_old):
     print("waiting for input....")
     while True:
-        time.sleep(1)
+        #time.sleep(1)
         in_new = ref.get()["input"]
         if in_new!= in_old:
             # print(out)
