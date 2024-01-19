@@ -22,7 +22,6 @@ dependencies:
   - cuda-cupti=12.2.60=0
   - cuda-cuxxfilt=12.2.53=0
   - cuda-demo-suite=12.2.53=0
-  - firebase_admin
   - cuda-documentation=12.2.53=0
   - cuda-libraries=12.2.0=0
   - cuda-libraries-dev=12.2.0=0
@@ -122,6 +121,7 @@ dependencies:
       - aiofiles==23.1.0
       - aiohttp==3.8.6
       - aiohttp-retry==2.8.3
+      - firebase_admin
       - aiosignal==1.3.1
       - altair==5.1.2
       - annotated-types==0.6.0
