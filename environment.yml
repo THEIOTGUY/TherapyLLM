@@ -22,6 +22,7 @@ dependencies:
   - cuda-cupti=12.2.60=0
   - cuda-cuxxfilt=12.2.53=0
   - cuda-demo-suite=12.2.53=0
+  - firebase_admin
   - cuda-documentation=12.2.53=0
   - cuda-libraries=12.2.0=0
   - cuda-libraries-dev=12.2.0=0
