@@ -21,10 +21,6 @@ from gtts import gTTS
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 sentiment = SentimentIntensityAnalyzer()
 import subprocess
-import openai
-openai.api_key = os.environ['CHATGPT_API']
-messages = [ {"role": "system", "content":  
-            "You are a intelligent assistant."} ] 
 working_directory = r"text-generation-webui"
 python_path = r"C:\Users\Ayush\anaconda3\envs\LLM\python.exe"
 script_path1 = r"TherapyReport.py"
@@ -68,30 +64,22 @@ def run_server(working_directory, python_path, script_path, model_path):
 
     try:
         while True:
-            in_old = ref.get()["input"]
-            out_old = ref.get()["output"]
-            user_input = userinput(in_old) 
-            # while True:  
-            #     if user_input: 
-            #         user_check = """AYUSHTEXT="{user_input}", check if this AYUSHTEXT means create therapy session report, if it means create therapy session report then reply me with "YES" otherwise reply with "NO" remember your reply should be only one word "YES" or "NO" """.format(user_input=user_input)
-            #         messages.append( 
-            #             {"role": "user", "content": user_check}, 
-            #         ) 
-            #         chat = openai.ChatCompletion.create( 
-            #             model="gpt-3.5-turbo", messages=messages 
-            #         ) 
-            #     reply = chat.choices[0].message.content 
-            #     #print(f"ChatGPT: {reply}") 
-            #     if reply=="YES":
-            #         print("Creating Therapy Session Report")
-            #         subprocess.run(command1, shell=True)
-            #         user_input="Thanks for this conversation, Bye :)"
-            #     break
-            user[0].send_keys(user_input)
-            userbtn = browser.find_element(By.XPATH, '//*[@id="Generate"]')
-            userbtn.click()
-            output1 = output(out_old)
-            get_tts(output1,user_input)
+            while True:
+                in_old = ref.get()["input"]
+                out_old = ref.get()["output"]
+                user_input = userinput(in_old) 
+                if user_input: 
+                    if "therapy session report" in user_input.lower():
+                        print("Creating Therapy Session Report")
+                        subprocess.run(command1, shell=True)
+                        break
+                    if "delete conversation" in user_input.lower():
+                        os.remove(r"text-generation-webui\logs\chat\Assistant")
+                user[0].send_keys(user_input)
+                userbtn = browser.find_element(By.XPATH, '//*[@id="Generate"]')
+                userbtn.click()
+                output1 = output(out_old)
+                get_tts(output1,user_input)
 
     except KeyboardInterrupt:
         # Handle keyboard interrupt (Ctrl+C)
@@ -137,6 +125,7 @@ def output(out_old):
     print(out)
     return out
 def userinput(in_old):
+    print("Commands : 1.therapy session report, 2.delete conversation")
     print("waiting for input....")
     while True:
         #time.sleep(1)
