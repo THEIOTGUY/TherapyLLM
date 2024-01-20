@@ -9,9 +9,8 @@ import speech_recognition as sr
 import json
 import firebase_admin
 import os
-import keyboard
 from firebase_admin import db
-cred_obj = firebase_admin.credentials.Certificate(r"C:\Users\vaida\Downloads\large-languge-model-firebase-adminsdk-spyw1-321f207473.json")
+cred_obj = firebase_admin.credentials.Certificate(r"firebasejson\large-languge-model-firebase-adminsdk-spyw1-321f207473.json")
 default_app = firebase_admin.initialize_app(cred_obj, {'databaseURL':"https://large-languge-model-default-rtdb.firebaseio.com/"})
 ref = db.reference("/")
 data=ref.set({"output":"hi","input":"hi"})
@@ -26,14 +25,14 @@ import openai
 openai.api_key = os.environ['CHATGPT_API']
 messages = [ {"role": "system", "content":  
             "You are a intelligent assistant."} ] 
-working_directory = r"C:\Users\vaida\text-generation-webui"
-python_path = r"C:\Users\vaida\.conda\envs\textgen\python.exe"
-script_path1 = r"C:\Users\vaida\OneDrive\Desktop\GIT\TherapyLLM\TherapyReport.py"
-script_path2 = r"C:\Users\vaida\AppData\Local\ov\pkg\audio2face-2023.1.1\exts\omni.audio2face.player\omni\audio2face\player\scripts\streaming_server\test_client.py"
-audio_file_path = r"C:\Users\vaida\text-generation-webui\audio_file_folder\welcome2.wav"
+working_directory = r"text-generation-webui"
+python_path = r"C:\Users\Ayush\anaconda3\envs\LLM\python.exe"
+script_path1 = r"TherapyReport.py"
+script_path2 = r"C:\Users\Ayush\AppData\Local\ov\pkg\audio2face-2023.1.1\exts\omni.audio2face.player\omni\audio2face\player\scripts\streaming_server\test_client.py"
+audio_file_path = r"text-generation-webui\audio_file_folder\welcome2.wav"
 streaming_path = "/World/audio2face/PlayerStreaming"
 script_path = r"server.py" 
-model_path = r"C:\Users\vaida\text-generation-webui\models\Ayush2312_llama2-7B-1k-TherapyData"
+model_path = r"models\Ayush2312_llama2-7B-1k-TherapyData"
 command1 = [python_path, script_path1]
 command2 = [python_path, script_path2, audio_file_path, streaming_path]
 
@@ -72,22 +71,22 @@ def run_server(working_directory, python_path, script_path, model_path):
             in_old = ref.get()["input"]
             out_old = ref.get()["output"]
             user_input = userinput(in_old) 
-            while True:  
-                if user_input: 
-                    user_check = """AYUSHTEXT="{user_input}", check if this AYUSHTEXT means create therapy session report, if it means create therapy session report then reply me with "YES" otherwise reply with "NO" remember your reply should be only one word "YES" or "NO" """.format(user_input=user_input)
-                    messages.append( 
-                        {"role": "user", "content": user_check}, 
-                    ) 
-                    chat = openai.ChatCompletion.create( 
-                        model="gpt-3.5-turbo", messages=messages 
-                    ) 
-                reply = chat.choices[0].message.content 
-                #print(f"ChatGPT: {reply}") 
-                if reply=="YES":
-                    print("Creating Therapy Session Report")
-                    subprocess.run(command1, shell=True)
-                    user_input="Thanks for this conversation, Bye :)"
-                break
+            # while True:  
+            #     if user_input: 
+            #         user_check = """AYUSHTEXT="{user_input}", check if this AYUSHTEXT means create therapy session report, if it means create therapy session report then reply me with "YES" otherwise reply with "NO" remember your reply should be only one word "YES" or "NO" """.format(user_input=user_input)
+            #         messages.append( 
+            #             {"role": "user", "content": user_check}, 
+            #         ) 
+            #         chat = openai.ChatCompletion.create( 
+            #             model="gpt-3.5-turbo", messages=messages 
+            #         ) 
+            #     reply = chat.choices[0].message.content 
+            #     #print(f"ChatGPT: {reply}") 
+            #     if reply=="YES":
+            #         print("Creating Therapy Session Report")
+            #         subprocess.run(command1, shell=True)
+            #         user_input="Thanks for this conversation, Bye :)"
+            #     break
             user[0].send_keys(user_input)
             userbtn = browser.find_element(By.XPATH, '//*[@id="Generate"]')
             userbtn.click()
@@ -105,7 +104,7 @@ def run_server(working_directory, python_path, script_path, model_path):
 def get_tts(output1,user_input):
     #output = GoogleTranslator(source='auto', target='hi').translate(output)
     tts = gTTS(output1)
-    tts.save(r"C:\Users\vaida\text-generation-webui\audio_file_folder\welcome2.wav")
+    tts.save(r"text-generation-webui\audio_file_folder\welcome2.wav")
     print("got tts")
     text = " INPUT : ", user_input + " ,OUTPUT : " + output1
     sent_1 = sentiment.polarity_scores(text)
@@ -121,7 +120,7 @@ def get_tts(output1,user_input):
     os.system(wholetext)
     print("emotions sent")
     subprocess.run(command2, shell=True)
-    os.remove(r"C:\Users\vaida\text-generation-webui\audio_file_folder\welcome2.wav")
+    os.remove(r"text-generation-webui\audio_file_folder\welcome2.wav")
 
 def output(out_old):
     while True:

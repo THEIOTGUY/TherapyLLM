@@ -5,7 +5,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 import os
 e = datetime.datetime.now()
-openai.api_key = os.environ['API_KEY']
+openai.api_key = os.environ['CHATGPT_API']
 Therapist = "Suzan"
 messages = [ {"role": "system", "content":  
               "You are a intelligent assistant."} ]
@@ -38,7 +38,7 @@ def load_json_from_folder(folder_path):
         return None
 
 # Example usage:
-folder_to_load_json = r"c:\Users\vaida\text-generation-webui\logs\chat\Suzan"
+folder_to_load_json = r"text-generation-webui\logs\chat\Suzan"
 data = load_json_from_folder(folder_to_load_json)
 
 # Use the loaded data as needed
@@ -171,5 +171,5 @@ def delete_files_in_folder(folder_path):
         print(f"Error occurred: {e}")
 
 # Example usage:
-folder_to_delete_files = r"C:\Users\vaida\text-generation-webui\logs\chat\Assistant"
+folder_to_delete_files = r"text-generation-webui\logs\chat\Assistant"
 delete_files_in_folder(folder_to_delete_files)
