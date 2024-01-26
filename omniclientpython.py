@@ -2,16 +2,20 @@ import speech_recognition as sr
 import firebase_admin
 from firebase_admin import db
 import keyboard
-cred_obj = firebase_admin.credentials.Certificate(r"firebasejson\large-languge-model-firebase-adminsdk-spyw1-321f207473.json")
-default_app = firebase_admin.initialize_app(cred_obj, {'databaseURL':"https://large-languge-model-default-rtdb.firebaseio.com/"})
+import datetime
+from firebase_admin import credentials, initialize_app, storage
+import os
+cred_obj = firebase_admin.credentials.Certificate(r"C:\Users\Ayush\Downloads\large-languge-model-firebase-adminsdk-spyw1-321f207473.json")
+default_app = firebase_admin.initialize_app(cred_obj, {'databaseURL':"https://large-languge-model-default-rtdb.firebaseio.com/",'storageBucket': 'large-languge-model.appspot.com'})
 ref = db.reference("/")
+e = datetime.datetime.now()
 def takeCommand():
     recognizer = sr.Recognizer()
     try:
         with sr.Microphone() as source:
             print("Listening...")
             #recognizer.adjust_for_ambient_noise(source, duration=1)
-            audio = recognizer.listen(source, timeout=5)
+            audio = recognizer.listen(source)
 
         command = recognizer.recognize_google(audio)
         print("You said:", command)
@@ -25,7 +29,23 @@ def takeCommand():
     return command
 while True:
     print("Commands : 1.therapy session report, 2.delete conversation")
-    print("Press Enter")
+    print("Press space")
     keyboard.wait("space")
-    command = takeCommand()
-    ref.update({"input":command})
+    user_input = takeCommand()
+    ref.update({"input": user_input + " [Time:-{hour}:{minute}:{second}]".format(hour=e.hour,minute=e.minute,second=e.second)})
+    if user_input: 
+        if "therapy session report" in user_input.lower():
+            print("Creating Therapy Session Report")
+            old_value = ref.get()["report"]
+            while True:
+                new_value = ref.get()["report"]
+                if old_value != new_value:
+                    source_blob_name = "example_report_with_heading.pdf"
+                    bucket_name = "large-languge-model.appspot.com"
+                    #The path to which the file should be downloaded
+                    destination_file_name=r"C:\Users\Ayush\OneDrive\Desktop\GIT\TherapyLLM\example_report_with_heading.pdf"
+                    assert os.path.isfile(destination_file_name)
+                    bucket = storage.bucket()
+                    blob = bucket.blob(source_blob_name)
+                    blob.download_to_filename(destination_file_name)
+                    break
