@@ -67,7 +67,7 @@ while True:
         )
        chat_completion = client.chat.completions.create(
         messages= messages,
-        model="openchat/openchat-3.5-1210",
+        model="togethercomputer/llama-2-70b-chat",
         max_tokens=3024)
     reply = chat_completion.choices[0].message.content 
     #print(f"ChatGPT: {reply}") 
