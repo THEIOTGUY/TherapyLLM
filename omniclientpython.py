@@ -32,7 +32,9 @@ while True:
     print("Press space")
     keyboard.wait("space")
     user_input = takeCommand()
+    old_value = ref.get()["output"]
     ref.update({"input": user_input + " [Time:-{hour}:{minute}:{second}]".format(hour=e.hour,minute=e.minute,second=e.second)})
+    new_value = ref.get()["output"]
     if user_input: 
         if "therapy session report" in user_input.lower():
             print("Creating Therapy Session Report")
@@ -49,3 +51,9 @@ while True:
                     blob = bucket.blob(source_blob_name)
                     blob.download_to_filename(destination_file_name)
                     break
+    if user_input: 
+        while True:
+            if old_value!=new_value:
+                break
+            new_value = ref.get()["output"]
+    print("OUTPUT: " + new_value)
