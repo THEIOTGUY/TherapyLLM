@@ -162,7 +162,7 @@ def generate_chat_prompt(user_input, state, **kwargs):
 
 
 def get_stopping_strings(state):
-    stopping_strings = []
+    stopping_strings = ["\n"]
     if state['mode'] in ['instruct', 'chat-instruct']:
         stopping_strings += [
             state['turn_template'].split('<|user-message|>')[1].split('<|bot|>')[0] + '<|bot|>',
