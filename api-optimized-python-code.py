@@ -39,7 +39,7 @@ print(f'Launching with Omniverse Audio2Face')
 working_directory = r"text-generation-webui"
 python_path = r"C:\Users\Ayush\anaconda3\envs\LLM\python.exe"
 script_path1 = r"TherapyReport.py"
-script_path2 = r"C:\Users\Ayush\AppData\Local\ov\pkg\audio2face-2023.2.0\exts\omni.audio2face.player\omni\audio2face\player\scripts\streaming_server\test_client.py"
+script_path2 = r"C:\Users\Ayush\AppData\Local\ov\pkg\audio2face-2023.1.1\exts\omni.audio2face.player\omni\audio2face\player\scripts\streaming_server\test_client.py"
 audio_file_path = r"text-generation-webui\audio_file_folder\welcome2.wav"
 streaming_path = "/World/audio2face/PlayerStreaming"
 script_path = r"server.py" 
