@@ -7,7 +7,7 @@ const firebaseConfig = {
     storageBucket: "large-languge-model.appspot.com",
     messagingSenderId: "1049616362097",
     appId: "1:1049616362097:web:28f348d76a019fc0b709d0"
-  };
+};
 firebase.initializeApp(firebaseConfig);
 
 // Get a reference to the database service and storage
@@ -17,7 +17,7 @@ const storage = firebase.storage();
 // Get references to HTML elements
 const messageList = document.getElementById('message-list');
 const messageInput = document.getElementById('message-input');
-
+const reportButton = document.getElementById('report-button');
 // Function to send a message to Firebase
 function sendMessage() {
     const messageInput = document.getElementById('message-input');
@@ -41,12 +41,14 @@ function sendMessage() {
         database.ref('input').set(message);
     }
 }
+
 function handleKeyPress(event) {
     if (event.key === 'Enter') {
         sendMessage();
         event.preventDefault(); // Prevent the default Enter key behavior (e.g., newline in the textarea)
     }
 }
+
 // Function to display messages
 function displayMessage(snapshot, messageType) {
     const message = snapshot.val();
@@ -76,7 +78,6 @@ function deleteMessages() {
     // Update Firebase value "DELETE" with the random string
     database.ref('DELETE').set(randomString);
 }
-
 
 // Function to generate a random string
 function generateRandomString() {
@@ -119,3 +120,10 @@ function downloadPdf() {
         });
 }
 
+// Function to send a random string to the "report" node in Firebase
+function sendRandomString() {
+    console.log('Report button clicked');
+    const randomString = generateRandomString();
+    console.log('Random string:', randomString);
+    database.ref('report').set(randomString);
+}

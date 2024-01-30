@@ -10,7 +10,7 @@
             font-weight: bold;
             margin: 0;
             padding: 0;
-            background: url('https://img.freepik.com/free-photo/robot-hand-3d-background-presenting-technology-gesture_53876-143119.jpg?w=1380&t=st=1706542755~exp=1706543355~hmac=539da3a595364c544a6ff96b492d328e9266d3e4762b660dd8e1fd1d330068a5') no-repeat center center fixed;
+            background: url('https://img.freepik.com/free-photo/robot-hand-background-presenting-technology-gesture_53876-129785.jpg?w=996&t=st=1706625107~exp=1706625707~hmac=1c486d6e759394023752c7be35f88df2a34107b2bad481810c3b70d5d1095c01') no-repeat center center fixed;
             background-size: cover;
             display: flex;
             justify-content: center;
@@ -41,11 +41,12 @@
             padding: 15px;
             border-bottom: 1px solid #ddd;
         }
+
         #footer {
             position: fixed;
             bottom: 10px;
             right: 10px;
-            background-color: rgba(0, 123, 255, 0.8);
+            background-color: rgba(34, 233, 240, 0.8);
             color: #fff;
             padding: 10px;
             border-radius: 10px;
@@ -82,7 +83,8 @@
 
         #delete-button,
         #download-button,
-        #send-button {
+        #send-button,
+        #report-button {
             width: 40px;
             height: 40px;
             border: none;
@@ -100,10 +102,12 @@
         #delete-button { background-color: #dc3545; color: #fff; }
         #download-button { background-color: #007bff; color: #fff; }
         #send-button { background-color: #007bff; color: #fff; }
+        #report-button { background-color: #28a745; color: #fff; }
 
         #delete-button:hover,
         #download-button:hover,
-        #send-button:hover {
+        #send-button:hover,
+        #report-button:hover {
             background-color: #0056b3;
         }
     </style>
@@ -114,11 +118,9 @@
         <input type="text" id="message-input" placeholder="Type your message..." onkeydown="handleKeyPress(event)">
         <button id="delete-button" onclick="deleteMessages()">🗑️</button>
         <button id="download-button" onclick="downloadPdf()">📄</button>
+        <button id="report-button" onclick="sendRandomString()">Report</button>
         <button id="send-button" onclick="sendMessage()">Send</button>
-    </div>
-    <div id="footer">
-        <p style="font-family: 'Arial', sans-serif; font-size: 16px;">Made by Ayush Vaidande and Dinesh Dantal</p>
-        <p style="font-size: 14px;">Github Link: <a href="https://github.com/THEIOTGUY/TherapyLLM" target="_blank">https://github.com/THEIOTGUY/TherapyLLM</a></p>
+        
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
