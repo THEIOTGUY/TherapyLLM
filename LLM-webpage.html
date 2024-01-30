@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatBot</title>
+    <style>
+        body {
+            font-family: 'cursive', sans-serif;
+            font-weight: bold;
+            margin: 0;
+            padding: 0;
+            background: url('https://img.freepik.com/free-photo/robot-hand-3d-background-presenting-technology-gesture_53876-143119.jpg?w=1380&t=st=1706542755~exp=1706543355~hmac=539da3a595364c544a6ff96b492d328e9266d3e4762b660dd8e1fd1d330068a5') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #chat-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            width: 80%;
+            max-width: 600px;
+            margin: 50px auto;
+        }
+
+        #message-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            height: 500px;
+            overflow-y: auto;
+            border-bottom: 1px solid #ddd;
+        }
+
+        #message-list li {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        #footer {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background-color: rgba(0, 123, 255, 0.8);
+            color: #fff;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 300px;
+            width: 100%;
+            text-align: center;
+        }
+
+        #footer p {
+            margin: 0;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        #footer a {
+            color: #fff;
+            text-decoration: underline;
+            white-space: nowrap;
+            display: inline-block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+
+        #message-input {
+            width: calc(100% - 60px);
+            padding: 15px;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            float: left;
+        }
+
+        #delete-button,
+        #download-button,
+        #send-button {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            outline: none;
+            margin: 15px;
+            float: right;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        #delete-button { background-color: #dc3545; color: #fff; }
+        #download-button { background-color: #007bff; color: #fff; }
+        #send-button { background-color: #007bff; color: #fff; }
+
+        #delete-button:hover,
+        #download-button:hover,
+        #send-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div id="chat-container">
+        <ul id="message-list"></ul>
+        <input type="text" id="message-input" placeholder="Type your message..." onkeydown="handleKeyPress(event)">
+        <button id="delete-button" onclick="deleteMessages()">🗑️</button>
+        <button id="download-button" onclick="downloadPdf()">📄</button>
+        <button id="send-button" onclick="sendMessage()">Send</button>
+    </div>
+    <div id="footer">
+        <p style="font-family: 'Arial', sans-serif; font-size: 16px;">Made by Ayush Vaidande and Dinesh Dantal</p>
+        <p style="font-size: 14px;">Github Link: <a href="https://github.com/THEIOTGUY/TherapyLLM" target="_blank">https://github.com/THEIOTGUY/TherapyLLM</a></p>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-storage-compat.js"></script>
+    <script src="script.js"></script>
+
+    <script>
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+                event.preventDefault(); // Prevent the default Enter key behavior (e.g., newline in the textarea)
+            }
+        }
+    </script>
+</body>
+</html>

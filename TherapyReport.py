@@ -68,7 +68,7 @@ while True:
        chat_completion = client.chat.completions.create(
         messages= messages,
         model="togethercomputer/llama-2-70b-chat",
-        max_tokens=3024)
+        max_tokens=2000)
     reply = chat_completion.choices[0].message.content 
     #print(f"ChatGPT: {reply}") 
     messages.append({"role": "assistant", "content": reply})
