@@ -7,35 +7,54 @@ import speech_recognition as sr
 import json
 import firebase_admin
 import os
-import shutil
 from firebase_admin import db
 cred_obj = firebase_admin.credentials.Certificate(r"firebasejson\large-languge-model-firebase-adminsdk-spyw1-321f207473.json")
 default_app = firebase_admin.initialize_app(cred_obj, {'databaseURL':"https://large-languge-model-default-rtdb.firebaseio.com/"})
 ref = db.reference("/")
-data = ref.set({"output":"hi","input":"hi","report":"er235ge","DELETE":"sdfuhsefuih"})
-from selenium.webdriver.common.keys import Keys 
+data = ref.set({"output":"Hi i am Suzan, Your Therapist, What you would like to talk about","input":".........................","report":"er235ge","DELETE":"sdfuhsefuih"})
 import html
 from gtts import gTTS
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 sentiment = SentimentIntensityAnalyzer()
 import subprocess
-from selenium.common.exceptions import TimeoutException
 import argparse
 ominiverse = False
 # Create an ArgumentParser object
 parser = argparse.ArgumentParser(description='Omniverse Audio2Face')
 # Add a command-line argument to toggle the variable
 parser.add_argument('--omniverse', action='store_true', help='Toggle omniverse to True')
-
+directory_to_delete1 = 'text-generation-webui\\logs\\chat\\Assistant'
+directory_to_delete2 = 'text-generation-webui\\logs\\chat\\AI'
+def delete_files_in_directory(directory):
+    if os.path.exists(directory):
+        try:
+            # List all files in the directory
+            files = os.listdir(directory)
+            
+            # Iterate over files and delete each one
+            for file in files:
+                file_path = os.path.join(directory, file)
+                try:
+                    os.remove(file_path)
+                    print(f"File '{file_path}' successfully deleted.")
+                except Exception as e:
+                    print(f"Error deleting file '{file_path}': {e}")
+            
+            print(f"All files inside directory '{directory}' successfully deleted.")
+        except Exception as e:
+            print(f"Error deleting files in directory '{directory}': {e}")
+    else:
+        print(f"Directory '{directory}' does not exist.")
 # Parse the command-line arguments
 args = parser.parse_args()
-
+delete_files_in_directory(directory_to_delete1)
+delete_files_in_directory(directory_to_delete2)
 # Update the variable based on the command-line argument
 if args.omniverse:
     ominiverse = True
-
-# Rest of your code
-print(f'Launching with Omniverse Audio2Face')
+    print(f'Launching with Omniverse Audio2Face')
+else:
+    print(f'Launching Webserver')
 working_directory = r"text-generation-webui"
 python_path = r"C:\Users\Ayush\anaconda3\envs\LLM\python.exe"
 script_path1 = r"TherapyReport.py"
@@ -72,7 +91,8 @@ def run_server(working_directory, python_path, script_path, model_path):
     time.sleep(40)
     browser = webdriver.Firefox() 
     browser.get('http://127.0.0.1:7860/')
-    user = WebDriverWait(browser, 25).until(EC.presence_of_element_located((By.XPATH, '//*[@id="chat-input"]/label/textarea')))
+    browser.minimize_window()
+    user = WebDriverWait(browser, 70).until(EC.presence_of_element_located((By.XPATH, '//*[@id="chat-input"]/label/textarea')))
 
     try:
         while True:
@@ -80,28 +100,21 @@ def run_server(working_directory, python_path, script_path, model_path):
                 in_old = ref.get()["input"]
                 out_old = ref.get()["output"]
                 delete_old = ref.get()["DELETE"]
-                user_input = userinput(in_old,browser,delete_old) 
+                old_report = ref.get()["report"]
+                user_input = userinput(in_old,browser,delete_old,old_report) 
                 if user_input: 
                     if "therapy session report" in user_input.lower():
                         print("Creating Therapy Session Report")
                         subprocess.run(command1, shell=True)
                         ref.update({"output":"Therapy session report has been created"})
+                        ref.set({"output":"Hi i am Suzan, Your Therapist, What you would like to talk about","input":".........................","report":"er235ge","DELETE":"sdfuhsefuih"})
+                        browser.refresh()
                         break
                     if "delete conversation" in user_input.lower():
                         print("deleting conversations")
-                        directory_to_delete1 = 'text-generation-webui\\logs\\chat\\Assistant'
-                        directory_to_delete2 = 'text-generation-webui\\logs\\chat\\AI'
                         # Check if the directory exists before attempting to delete
-                        if os.path.exists(directory_to_delete1) or os.path.exists(directory_to_delete2):
-                            try:
-                                # Attempt to remove the directory and its contents
-                                shutil.rmtree(directory_to_delete1)
-                                shutil.rmtree(directory_to_delete2)
-                                print(f"Directory '{directory_to_delete1}' successfully deleted.")
-                            except Exception as e:
-                                print(f"Error deleting directory: {e}")
-                        else:
-                            print(f"Directory '{directory_to_delete1}' does not exist.")
+                        delete_files_in_directory(directory_to_delete1)
+                        delete_files_in_directory(directory_to_delete2)
                         browser.refresh()
                         ref.update({"output":"Previous Conversations has been deleted"})
                 user = WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="chat-input"]/label/textarea')))
@@ -155,36 +168,31 @@ def output(out_old):
     
     print(out)
     return out
-def userinput(in_old,browser,delete_old):
+def userinput(in_old,browser,delete_old,old_report):
     print("Commands : 1.therapy session report, 2.delete conversation")
     print("waiting for input....")
     while True:
         #time.sleep(1)
         in_new = ref.get()["input"]
         delete_new = ref.get()["DELETE"]
+        new_report = ref.get()["report"]
         time.sleep(0.5)
         if in_new!= in_old:
             # print(out)
             break
         if delete_new!= delete_old:
             print("deleting conversations")
-            directory_to_delete1 = 'text-generation-webui\\logs\\chat\\Assistant'
-            directory_to_delete2 = 'text-generation-webui\\logs\\chat\\AI'
             # Check if the directory exists before attempting to delete
-            if os.path.exists(directory_to_delete1) or os.path.exists(directory_to_delete2):
-                try:
-                    # Attempt to remove the directory and its contents
-                    shutil.rmtree(directory_to_delete1)
-                    shutil.rmtree(directory_to_delete2)
-                    print(f"Directory '{directory_to_delete1}' successfully deleted.")
-                except Exception as e:
-                    print(f"Error deleting directory: {e}")
-            else:
-                print(f"Directory '{directory_to_delete1}' does not exist.")
+            delete_files_in_directory(directory_to_delete1)
+            delete_files_in_directory(directory_to_delete2)
             browser.refresh()
             ref.update({"output":"Previous Conversations has been deleted"})
+            ref.set({"output":"Hi i am Suzan, Your Therapist, What you would like to talk about","input":".........................","report":"er235ge","DELETE":"sdfuhsefuih"})
+        if new_report != old_report:
+            ref.update({"input":"Create Therapy session report"})
     return in_new
 
 run_server(working_directory, python_path, script_path, model_path)
+
 
 

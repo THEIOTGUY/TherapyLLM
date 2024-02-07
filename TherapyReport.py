@@ -1,4 +1,3 @@
-import openai
 import json
 import datetime
 from reportlab.lib.pagesizes import letter
@@ -9,12 +8,16 @@ import secrets
 import string
 import firebase_admin
 from firebase_admin import db
-import keyboard
 cred_obj = firebase_admin.credentials.Certificate(r"C:\Users\Ayush\Downloads\large-languge-model-firebase-adminsdk-spyw1-321f207473.json")
 default_app = firebase_admin.initialize_app(cred_obj, {'databaseURL':"https://large-languge-model-default-rtdb.firebaseio.com/",'storageBucket': "large-languge-model.appspot.com"})
 ref = db.reference("/")
 e = datetime.datetime.now()
 Therapist = "Suzan"
+from IPython.display import Markdown
+import textwrap
+def to_markdown(text):
+  text = text.replace('•', '  *')
+  return Markdown(textwrap.indent(text, '> ', predicate=lambda _: True))
 from openai import OpenAI
 TOGETHER_API_KEY = os.environ.get("OPENAI_API_KEY")
 client = OpenAI(api_key=TOGETHER_API_KEY,
@@ -22,6 +25,7 @@ client = OpenAI(api_key=TOGETHER_API_KEY,
 )
 messages = [ {"role": "system", "content":  
               "You are a intelligent assistant."} ]
+
 
 def load_json_from_folder(folder_path):
     try:
@@ -60,7 +64,7 @@ data=str(data)
 #print(data)
 print("info :-  Date:- {day}:{month}:{year},Time:-{hour}:{minute}".format(day=e.day,month=e.month,year=e.year,hour=e.hour,minute=e.minute))
 while True: 
-    message = "Therapist Name:-{Therapist}, Read this conversation and create a professional therapy report :- ".format(Therapist=Therapist)+ data + "info :- Date:- {day}:{month}:{year},Time:-{hour}:{minute}".format(day=e.day,month=e.month,year=e.year,hour=e.hour,minute=e.minute)
+    message = "You are a therapist who just had a therapy session with a person and now you have to Create a therapy session report for the patient based on the following conversations :- " + data + " Therapist Name:-{Therapist},info :- Date:- {day}:{month}:{year},Time:-{hour}:{minute}".format(day=e.day,month=e.month,year=e.year,hour=e.hour,minute=e.minute,Therapist=Therapist)
     if message: 
        messages.append( 
             {"role": "user", "content": message}, 
@@ -103,9 +107,7 @@ def create_txt_from_text_with_heading(input_text, heading, output_filename='outp
 
 # Replace this with your actual reply containing the input text
 example_text_input = reply
-
 example_heading = ""
-
 # Call the function to create the TXT file with the provided text input and heading
 create_txt_from_text_with_heading(example_text_input, example_heading, 'example_report_with_heading.txt')
 def text_to_pdf_with_heading(input_filename, output_filename='output.pdf', heading='Therapy Session Report', encoding='utf-8'):
@@ -156,37 +158,46 @@ def text_to_pdf_with_heading(input_filename, output_filename='output.pdf', headi
         pdf_canvas.drawString(50, y_position, current_line.strip())
         y_position -= 15  # Adjust as needed for line height
 
+        # Check if new page is needed
+        if y_position < 50:
+            pdf_canvas.showPage()
+            pdf_canvas.setFont("Helvetica", 12)
+            pdf_canvas.drawCentredString(letter[0] / 2, 750, heading)
+            y_position = 720  # Adjusted for the heading
+
     # Save the PDF document
     pdf_canvas.save()
-
 # Example usage:
 input_text_file = 'example_report_with_heading.txt'
 output_pdf_file = 'example_report_with_heading.pdf'
 
 # Call the function to convert the text file to PDF with a big heading
 text_to_pdf_with_heading(input_text_file, output_pdf_file)
-import os
-
-def delete_files_in_folder(folder_path):
-    try:
-        # List all files in the folder
-        files = os.listdir(folder_path)
-
-        # Iterate through each file and delete it
-        for file_name in files:
-            file_path = os.path.join(folder_path, file_name)
-            if os.path.isfile(file_path):
-                os.remove(file_path)
-
-        print(f"All files in {folder_path} have been deleted successfully.")
-
-    except Exception as e:
-        print(f"Error occurred: {e}")
-
-# Example usage:
-folder_to_delete_files = r"text-generation-webui\logs\chat\Assistant"
-delete_files_in_folder(folder_to_delete_files)
-from firebase_admin import credentials, firestore, storage
+directory_to_delete1 = 'text-generation-webui\\logs\\chat\\Assistant'
+directory_to_delete2 = 'text-generation-webui\\logs\\chat\\AI'
+def delete_files_in_directory(directory):
+    if os.path.exists(directory):
+        try:
+            # List all files in the directory
+            files = os.listdir(directory)
+            
+            # Iterate over files and delete each one
+            for file in files:
+                file_path = os.path.join(directory, file)
+                try:
+                    os.remove(file_path)
+                    print(f"File '{file_path}' successfully deleted.")
+                except Exception as e:
+                    print(f"Error deleting file '{file_path}': {e}")
+            
+            print(f"All files inside directory '{directory}' successfully deleted.")
+        except Exception as e:
+            print(f"Error deleting files in directory '{directory}': {e}")
+    else:
+        print(f"Directory '{directory}' does not exist.")
+delete_files_in_directory(directory_to_delete1)
+delete_files_in_directory(directory_to_delete2)
+from firebase_admin import firestore, storage
 db = firestore.client()
 bucket = storage.bucket()
 blob = bucket.blob('example_report_with_heading.pdf')
@@ -203,6 +214,7 @@ def generate_random_string(length=8):
 # Example usage:
 random_alphanumeric_string = generate_random_string()
 ref.update({"report" : random_alphanumeric_string})
+
 
 
 
