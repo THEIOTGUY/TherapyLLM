@@ -88,10 +88,29 @@ def takeCommand():
 def run_server(working_directory, python_path, script_path, model_path):
 
     process = subprocess.Popen(f'cd /d "{working_directory}" && {python_path} {script_path} --model "{model_path}" --load-in-4bit --use_double_quant --share',shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-    time.sleep(40)
     browser = webdriver.Firefox() 
-    browser.get('http://127.0.0.1:7860/')
-    browser.minimize_window()
+    from selenium.webdriver.support.ui import WebDriverWait
+    from selenium.webdriver.support import expected_conditions as EC
+
+    # Define your function to wait for the website to come online
+    def wait_for_website(url, timeout=80, retry_interval=10):
+        start_time = time.time()
+        while time.time() - start_time < timeout:
+            try:
+                browser = webdriver.Firefox() 
+                browser.get(url)
+                browser.minimize_window()
+                WebDriverWait(browser, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="chat-input"]/label/textarea')))
+                return browser
+            except Exception as e:
+                print("An error occurred:", e)
+                print("Retrying in {} seconds...".format(retry_interval))
+                time.sleep(retry_interval)
+        print("Timeout exceeded. Website didn't come online within {} seconds.".format(timeout))
+        return None
+
+    # Call the function to wait for the website to come online
+    browser = wait_for_website('http://127.0.0.1:7860/')
     user = WebDriverWait(browser, 70).until(EC.presence_of_element_located((By.XPATH, '//*[@id="chat-input"]/label/textarea')))
 
     try:

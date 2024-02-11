@@ -13,7 +13,7 @@ from PIL import Image
 #``````````````````````````````
 import firebase_admin
 from firebase_admin import db
-cred_obj = firebase_admin.credentials.Certificate(r"C:\Users\vaida\Downloads\large-languge-model-firebase-adminsdk-spyw1-321f207473.json")
+cred_obj = firebase_admin.credentials.Certificate(r"firebasejson\large-languge-model-firebase-adminsdk-spyw1-321f207473.json")
 default_app = firebase_admin.initialize_app(cred_obj, {'databaseURL':"https://large-languge-model-default-rtdb.firebaseio.com/"})
 ref = db.reference("/")
 #``````````````````````````````

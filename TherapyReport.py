@@ -56,10 +56,29 @@ def load_json_from_folder(folder_path):
 # Example usage:
 folder_to_load_json = r"text-generation-webui\logs\chat\Assistant"
 data = load_json_from_folder(folder_to_load_json)
+import json
+import html
 
+def extract_visible_conversations(data):
+    therapist_patient_pairs = []
+    visible_conversations = data.get("visible", [])  # Extract only from the "visible" part
+    for chat in visible_conversations:
+        therapist_message = html.unescape(chat[1])  # Decode therapist's message
+        patient_message = html.unescape(chat[0])  # Decode patient's message
+        if therapist_message or patient_message:  # Skip if both therapist and patient messages are empty
+            therapist_patient_pairs.append({"Patient": patient_message, "Therapist": therapist_message})
+    return therapist_patient_pairs
+
+def main(data):
+    therapist_patient_pairs = extract_visible_conversations(data)
+    #for pair in therapist_patient_pairs:
+        #print(pair)
+    print(therapist_patient_pairs)
+    return therapist_patient_pairs
+data = main(data)
 # Use the loaded data as needed
-if data:
-    print(data)
+#if data:
+    #print(data)
 data=str(data)
 #print(data)
 print("info :-  Date:- {day}:{month}:{year},Time:-{hour}:{minute}".format(day=e.day,month=e.month,year=e.year,hour=e.hour,minute=e.minute))
@@ -201,7 +220,7 @@ from firebase_admin import firestore, storage
 db = firestore.client()
 bucket = storage.bucket()
 blob = bucket.blob('example_report_with_heading.pdf')
-outfile=r"C:\Users\Ayush\OneDrive\Desktop\GIT\TherapyLLM\example_report_with_heading.pdf"
+outfile=r"C:\Users\Ayush\GIT\TherapyLLM\example_report_with_heading.pdf"
 assert os.path.isfile(outfile)
 blob.upload_from_filename(outfile)
 import secrets
