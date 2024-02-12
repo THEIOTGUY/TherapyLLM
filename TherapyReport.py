@@ -56,7 +56,7 @@ def load_json_from_folder(folder_path):
         return None
 
 # Example usage:
-folder_to_load_json = r"text-generation-webui\logs\chat\Assistant"
+folder_to_load_json = r"text-generation-webui\logs\chat\Suzan"
 data = load_json_from_folder(folder_to_load_json)
 import json
 import html
@@ -85,7 +85,7 @@ data=str(data)
 #print(data)
 print("info :-  Date:- {day}:{month}:{year},Time:-{hour}:{minute}".format(day=e.day,month=e.month,year=e.year,hour=e.hour,minute=e.minute))
 while True: 
-    message = "You are a therapist who just had a therapy session with a person and now you have to Create a therapy session report for the patient based on the following conversations in this following format :- Therapy Session Report: Includes session date, time, therapist's name, patient's name. Session Overview: Brief overview of session objectve. Assessment and Progress: Summary of presenting concerns, and assessment of symptoms .What patient should do : Give recommendations what patient should do in order to improve and get better. Conclusion: Any closing remarks or additional information pertinent to the session. :- " + data + " Therapist Name:-{Therapist},info :- Date:- {day}:{month}:{year},Time:-{hour}:{minute}".format(day=e.day,month=e.month,year=e.year,hour=e.hour,minute=e.minute,Therapist=Therapist)
+    message = "You are a therapist who just had a therapy session with a person and now you have to Create a therapy session report for the patient based on the following conversations in this following format :- Therapy Session Report: Includes session date, time, therapist's name, patient's name. Session Overview: Brief overview of session objectve. Assessment and Progress: Summary of presenting concerns, and assessment of symptoms. Recommendations : Give recommendations what patient should do in order to improve and get better. Conclusion: Any closing remarks or additional information pertinent to the session. :- " + data + " Therapist Name:-{Therapist},info :- Date:- {day}:{month}:{year},Time:-{hour}:{minute}".format(day=e.day,month=e.month,year=e.year,hour=e.hour,minute=e.minute,Therapist=Therapist)
     if message: 
        reply = model.generate_content(message)
        reply = cleaned_text = reply.text.replace('**', '')
@@ -186,8 +186,7 @@ output_pdf_file = 'example_report_with_heading.pdf'
 
 # Call the function to convert the text file to PDF with a big heading
 text_to_pdf_with_heading(input_text_file, output_pdf_file)
-directory_to_delete1 = 'text-generation-webui\\logs\\chat\\Assistant'
-directory_to_delete2 = 'text-generation-webui\\logs\\chat\\AI'
+directory_to_delete1 = 'text-generation-webui\\logs\\chat\\Suzan'
 def delete_files_in_directory(directory):
     if os.path.exists(directory):
         try:
@@ -209,7 +208,6 @@ def delete_files_in_directory(directory):
     else:
         print(f"Directory '{directory}' does not exist.")
 delete_files_in_directory(directory_to_delete1)
-delete_files_in_directory(directory_to_delete2)
 from firebase_admin import firestore, storage
 db = firestore.client()
 bucket = storage.bucket()

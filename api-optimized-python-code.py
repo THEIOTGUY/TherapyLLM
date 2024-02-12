@@ -23,8 +23,7 @@ ominiverse = False
 parser = argparse.ArgumentParser(description='Omniverse Audio2Face')
 # Add a command-line argument to toggle the variable
 parser.add_argument('--omniverse', action='store_true', help='Toggle omniverse to True')
-directory_to_delete1 = 'text-generation-webui\\logs\\chat\\Assistant'
-directory_to_delete2 = 'text-generation-webui\\logs\\chat\\AI'
+directory_to_delete1 = 'text-generation-webui\\logs\\chat\\Suzan'
 def delete_files_in_directory(directory):
     if os.path.exists(directory):
         try:
@@ -48,7 +47,6 @@ def delete_files_in_directory(directory):
 # Parse the command-line arguments
 args = parser.parse_args()
 delete_files_in_directory(directory_to_delete1)
-delete_files_in_directory(directory_to_delete2)
 # Update the variable based on the command-line argument
 if args.omniverse:
     ominiverse = True
@@ -86,14 +84,13 @@ def takeCommand():
 
     return command
 def run_server(working_directory, python_path, script_path, model_path):
-
-    process = subprocess.Popen(f'cd /d "{working_directory}" && {python_path} {script_path} --model "{model_path}" --load-in-4bit --use_double_quant --share',shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+    process = subprocess.Popen(f'cd /d "{working_directory}" && {python_path} {script_path} --model "{model_path}" --load-in-4bit --character Suzan',shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
     browser = webdriver.Firefox() 
     from selenium.webdriver.support.ui import WebDriverWait
     from selenium.webdriver.support import expected_conditions as EC
 
     # Define your function to wait for the website to come online
-    def wait_for_website(url, timeout=80, retry_interval=10):
+    def wait_for_website(url, timeout=80, retry_interval=20):
         start_time = time.time()
         while time.time() - start_time < timeout:
             try:
@@ -133,7 +130,6 @@ def run_server(working_directory, python_path, script_path, model_path):
                         print("deleting conversations")
                         # Check if the directory exists before attempting to delete
                         delete_files_in_directory(directory_to_delete1)
-                        delete_files_in_directory(directory_to_delete2)
                         browser.refresh()
                         ref.update({"output":"Previous Conversations has been deleted"})
                 user = WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="chat-input"]/label/textarea')))
@@ -203,12 +199,13 @@ def userinput(in_old,browser,delete_old,old_report):
             print("deleting conversations")
             # Check if the directory exists before attempting to delete
             delete_files_in_directory(directory_to_delete1)
-            delete_files_in_directory(directory_to_delete2)
             browser.refresh()
             ref.update({"output":"Previous Conversations has been deleted"})
-            ref.set({"output":"Hi i am Suzan, Your Therapist, What you would like to talk about","input":".........................","report":"er235ge","DELETE":"sdfuhsefuih"})
+            ref.update({"output":"Hi i am Suzan, Your Therapist, What you would like to talk about"})
+            delete_old = delete_new
         if new_report != old_report:
             ref.update({"input":"Create Therapy session report"})
+            old_report = new_report
     return in_new
 
 run_server(working_directory, python_path, script_path, model_path)
