@@ -14,18 +14,20 @@ ref = db.reference("/")
 e = datetime.datetime.now()
 Therapist = "Suzan"
 from IPython.display import Markdown
+import google.generativeai as genai
+from IPython.display import display
+from IPython.display import Markdown
+import os
 import textwrap
 def to_markdown(text):
   text = text.replace('•', '  *')
   return Markdown(textwrap.indent(text, '> ', predicate=lambda _: True))
-from openai import OpenAI
-TOGETHER_API_KEY = os.environ.get("OPENAI_API_KEY")
-client = OpenAI(api_key=TOGETHER_API_KEY,
-  base_url='https://api.together.xyz',
-)
-messages = [ {"role": "system", "content":  
-              "You are a intelligent assistant."} ]
-
+GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
+genai.configure(api_key=GOOGLE_API_KEY)
+for m in genai.list_models():
+  if 'generateContent' in m.supported_generation_methods:
+    print(m.name)
+model = genai.GenerativeModel('gemini-pro')
 
 def load_json_from_folder(folder_path):
     try:
@@ -83,20 +85,12 @@ data=str(data)
 #print(data)
 print("info :-  Date:- {day}:{month}:{year},Time:-{hour}:{minute}".format(day=e.day,month=e.month,year=e.year,hour=e.hour,minute=e.minute))
 while True: 
-    message = "You are a therapist who just had a therapy session with a person and now you have to Create a therapy session report for the patient based on the following conversations :- " + data + " Therapist Name:-{Therapist},info :- Date:- {day}:{month}:{year},Time:-{hour}:{minute}".format(day=e.day,month=e.month,year=e.year,hour=e.hour,minute=e.minute,Therapist=Therapist)
+    message = "You are a therapist who just had a therapy session with a person and now you have to Create a therapy session report for the patient based on the following conversations in this following format :- Therapy Session Report: Includes session date, time, therapist's name, patient's name. Session Overview: Brief overview of session objectve. Assessment and Progress: Summary of presenting concerns, and assessment of symptoms .What patient should do : Give recommendations what patient should do in order to improve and get better. Conclusion: Any closing remarks or additional information pertinent to the session. :- " + data + " Therapist Name:-{Therapist},info :- Date:- {day}:{month}:{year},Time:-{hour}:{minute}".format(day=e.day,month=e.month,year=e.year,hour=e.hour,minute=e.minute,Therapist=Therapist)
     if message: 
-       messages.append( 
-            {"role": "user", "content": message}, 
-        )
-       chat_completion = client.chat.completions.create(
-        messages= messages,
-        model="togethercomputer/llama-2-70b-chat",
-        max_tokens=2000)
-    reply = chat_completion.choices[0].message.content 
-    #print(f"ChatGPT: {reply}") 
-    messages.append({"role": "assistant", "content": reply})
+       reply = model.generate_content(message)
+       reply = cleaned_text = reply.text.replace('**', '')
     break
-print(reply.encode("utf-8"))
+print(reply)
 def format_input_text(input_text):
     # Split the input text into lines
     lines = input_text.strip().split('\n\n')
