@@ -1,7 +1,7 @@
 from datasets import load_dataset, Dataset
 
 # Load the dataset
-dataset = load_dataset("json", data_files=r"C:\Users\vaida\Downloads\TherapyDataset.json")
+dataset = load_dataset("json", data_files=r"C:\Users\Ayush\Downloads\vicunaformatfixedfinal.json")
 # Define a function to transform the data
 def transform_conversation(entry):
     reformatted_segments = []
@@ -12,10 +12,10 @@ def transform_conversation(entry):
     print(f"Identity ID: {entry['id']}")
     for oneconversation in entry['conversations']:
         #print(oneconversation)
-        if oneconversation['from'] == 'input':
+        if oneconversation['from'] == 'human':
             user_text = f"{oneconversation['value']}"
             reformatted_segments.append(f'[INST] {user_text}')
-        elif oneconversation['from'] == 'response':
+        elif oneconversation['from'] == 'gpt':
             assistant_text = f"{oneconversation['value']}"
             reformatted_segments.append(f'[/INST] {assistant_text}')
     return '<s>'+''.join(reformatted_segments)+'</s>'

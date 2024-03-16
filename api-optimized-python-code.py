@@ -5,8 +5,8 @@ from selenium.webdriver.support import expected_conditions as EC
 import time 
 import speech_recognition as sr
 import json
-import firebase_admin
 import os
+import firebase_admin
 from firebase_admin import db
 cred_obj = firebase_admin.credentials.Certificate(r"firebasejson\large-languge-model-firebase-adminsdk-spyw1-321f207473.json")
 default_app = firebase_admin.initialize_app(cred_obj, {'databaseURL':"https://large-languge-model-default-rtdb.firebaseio.com/"})
@@ -18,6 +18,31 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 sentiment = SentimentIntensityAnalyzer()
 import subprocess
 import argparse
+from langchain.document_loaders import HuggingFaceDatasetLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.embeddings import HuggingFaceEmbeddings
+from langchain.vectorstores import FAISS
+from transformers import AutoTokenizer, AutoModelForQuestionAnswering
+from transformers import AutoTokenizer, pipeline
+from langchain import HuggingFacePipeline
+from langchain.chains import RetrievalQA
+# Define the path to the pre-trained model you want to use
+modelPath = "sentence-transformers/all-MiniLM-l6-v2"
+
+# Create a dictionary with model configuration options, specifying to use the CPU for computations
+model_kwargs = {'device':'cuda'}
+
+# Create a dictionary with encoding options, specifically setting 'normalize_embeddings' to False
+encode_kwargs = {'normalize_embeddings': False}
+
+# Initialize an instance of HuggingFaceEmbeddings with the specified parameters
+embeddings = HuggingFaceEmbeddings(
+    model_name=modelPath,     # Provide the pre-trained model's path
+    model_kwargs=model_kwargs, # Pass the model configuration options
+    encode_kwargs=encode_kwargs # Pass the encoding options
+)
+db = FAISS.load_local("therapyLLM_807k", embeddings, allow_dangerous_deserialization=True)
+FAISS_CHAT = ""
 ominiverse = False
 # Create an ArgumentParser object
 parser = argparse.ArgumentParser(description='Omniverse Audio2Face')
@@ -83,18 +108,19 @@ def takeCommand():
         command = "What you think we should talk about"
 
     return command
-def run_server(working_directory, python_path, script_path, model_path):
+def run_server(working_directory, python_path, script_path, model_path,FAISS_CHAT):
     process = subprocess.Popen(f'cd /d "{working_directory}" && {python_path} {script_path} --model "{model_path}" --load-in-4bit --character Suzan',shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
     browser = webdriver.Firefox() 
     from selenium.webdriver.support.ui import WebDriverWait
     from selenium.webdriver.support import expected_conditions as EC
 
     # Define your function to wait for the website to come online
-    def wait_for_website(url, timeout=80, retry_interval=20):
+    def wait_for_website(url, timeout=200, retry_interval=20):
         start_time = time.time()
         while time.time() - start_time < timeout:
             try:
-                browser = webdriver.Firefox() 
+                browser = webdriver.Firefox()
+                browser.minimize_window()
                 browser.get(url)
                 browser.minimize_window()
                 WebDriverWait(browser, 20).until(EC.presence_of_element_located((By.XPATH, '//*[@id="chat-input"]/label/textarea')))
@@ -102,6 +128,7 @@ def run_server(working_directory, python_path, script_path, model_path):
             except Exception as e:
                 print("An error occurred:", e)
                 print("Retrying in {} seconds...".format(retry_interval))
+                browser.minimize_window()
                 time.sleep(retry_interval)
         print("Timeout exceeded. Website didn't come online within {} seconds.".format(timeout))
         return None
@@ -117,28 +144,47 @@ def run_server(working_directory, python_path, script_path, model_path):
                 out_old = ref.get()["output"]
                 delete_old = ref.get()["DELETE"]
                 old_report = ref.get()["report"]
-                user_input = userinput(in_old,browser,delete_old,old_report) 
-                if user_input: 
-                    if "therapy session report" in user_input.lower():
+                user_input = userinput(in_old,browser,delete_old,old_report)
+                FAISS_CHAT = FAISS_CHAT + "Patient: {user_input},".format(user_input=user_input)
+                example = db.similarity_search_with_score(FAISS_CHAT)
+                example_score = example[0][1]
+                example_contents = [(str(item[0]).replace("page_content=", "").replace("[INST]", "Patient:").replace("[/INST]", "Therapist:").replace("<s>", "").replace("</s>", "").replace("Charlie", "").replace("Alex", "").replace("\\\'", "'")) for item in example[:1]]
+                example_string = ' '.join(example_contents)
+                # Extract the first 200 words
+                example = ' '.join(example_string.split()[:100])
+                if example_score > 1.0:
+                    example = ""
+                print("SIMILAR SEARCH: ",example)
+                prompt_and_input = """
+                You are a therapist use the example below to answer the Patient
+                ### Patient : {user_input}
+                ### Example : {example}
+                """.format(user_input=user_input,example=example)
+                ref.update({"prompt":prompt_and_input})
+                if prompt_and_input: 
+                    if "therapy session report" in prompt_and_input.lower():
                         print("Creating Therapy Session Report")
                         subprocess.run(command1, shell=True)
                         ref.update({"output":"Therapy session report has been created"})
                         ref.set({"output":"Hi i am Suzan, Your Therapist, What you would like to talk about","input":".........................","report":"er235ge","DELETE":"sdfuhsefuih"})
                         browser.refresh()
                         break
-                    if "delete conversation" in user_input.lower():
+                    if "delete conversation" in prompt_and_input.lower():
                         print("deleting conversations")
                         # Check if the directory exists before attempting to delete
                         delete_files_in_directory(directory_to_delete1)
+                        FAISS_CHAT = ""
                         browser.refresh()
                         ref.update({"output":"Previous Conversations has been deleted"})
                 user = WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="chat-input"]/label/textarea')))
-                user.send_keys(user_input)
+                user.send_keys(prompt_and_input)
                 userbtn = browser.find_element(By.XPATH, '//*[@id="Generate"]')
                 userbtn.click()
                 output1 = output(out_old)
+                FAISS_CHAT = FAISS_CHAT + "Therapist: {output1},".format(output1=output1)
+                print("FAISS_CHAT:",FAISS_CHAT)
                 if ominiverse == True:
-                    get_tts(output1,user_input)
+                    get_tts(output1,prompt_and_input)
 
     except KeyboardInterrupt:
         # Handle keyboard interrupt (Ctrl+C)
@@ -200,6 +246,7 @@ def userinput(in_old,browser,delete_old,old_report):
             # Check if the directory exists before attempting to delete
             delete_files_in_directory(directory_to_delete1)
             browser.refresh()
+            FAISS_CHAT = ""
             ref.update({"output":"Previous Conversations has been deleted"})
             ref.update({"output":"Hi i am Suzan, Your Therapist, What you would like to talk about"})
             delete_old = delete_new
@@ -208,7 +255,7 @@ def userinput(in_old,browser,delete_old,old_report):
             old_report = new_report
     return in_new
 
-run_server(working_directory, python_path, script_path, model_path)
+run_server(working_directory, python_path, script_path, model_path,FAISS_CHAT)
 
 
 
