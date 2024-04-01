@@ -22,6 +22,7 @@ The Real-Time Therapy Assistant combines the power of Llama 2-7B with a human-li
 * If using raspberrypi then install ubuntu 23.10 server then git clone this repo and then run the following commands and then run raspberrypi_Client.py using sudo command.
 ```
 sudo apt-get install libasound-dev portaudio19-dev libportaudio2 libportaudiocpp0
+sudo apt-get install flac
 pip install pyaudio
 git clone https://github.com/THEIOTGUY/TherapyLLM.git
 cd TherapyLLM
