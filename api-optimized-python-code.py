@@ -156,9 +156,11 @@ def run_server(working_directory, python_path, script_path, model_path,FAISS_CHA
                     example = ""
                 print("SIMILAR SEARCH: ",example)
                 prompt_and_input = """
-                You are a therapist use the example below to answer the Patient
-                ### Patient : {user_input}
-                ### Example : {example}
+                ## You are a therapist you have to consult the patient you can use the example below to answer the Patient
+
+                ## Example : {example}
+
+                ## Patient Question : {user_input}
                 """.format(user_input=user_input,example=example)
                 ref.update({"prompt":prompt_and_input})
                 if prompt_and_input: 
