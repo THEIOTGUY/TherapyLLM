@@ -37,7 +37,9 @@ The study titled "AI-based Therapist using finetuned LLM" presents a new way to 
 * After Fine-tuning the LLM we will use "https://github.com/oobabooga/text-generation-webui.git" for running the Fine-tune LLM, Also replace chat.py from modules folder from https://github.com/oobabooga/text-generation-webui.git with the chat.py given in repository
 * We will use Omni-Verse Audio2Face for visual graphics (i.e Animations).
 * We can use omniclientpython.py or raspberrypi_Client.py as input methods for LLM
-
+* Dataset link: fine-tuning dataset 1000 samples : [Ayush2312/Therapydataset_formatted_1k]([Ayush2312/Therapydataset_formatted_1k](https://huggingface.co/datasets/Ayush2312/Therapydataset_formatted_1k))
+* Dataset link: RAG 807k dataset [Ayush2312/Therapydataset_formatted_807K]([Ayush2312/Therapydataset_formatted_1k](https://huggingface.co/datasets/Ayush2312/Therapydataset_formatted_807K))
+  
 ### Webpage Screenshots:
 
 
