@@ -39,9 +39,9 @@ The study titled "AI-based Therapist using finetuned LLM" presents a new way to 
 * We can use omniclientpython.py or raspberrypi_Client.py as input methods for LLM
 * Dataset link: fine-tuning dataset 1000 samples : [Ayush2312/Therapydataset_formatted_1k]([Ayush2312/Therapydataset_formatted_1k](https://huggingface.co/datasets/Ayush2312/Therapydataset_formatted_1k))
 * Dataset link: RAG 807k dataset [Ayush2312/Therapydataset_formatted_807K]([Ayush2312/Therapydataset_formatted_1k](https://huggingface.co/datasets/Ayush2312/Therapydataset_formatted_807K))
+* Model Link: [Ayush2312/llama2-7B-1k-TherapyData]([Ayush2312/Therapydataset_formatted_1k]([https://huggingface.co/datasets/Ayush2312/Therapydataset_formatted_807K](https://huggingface.co/Ayush2312/llama2-7B-1k-TherapyData))
   
 ### Webpage Screenshots:
-
 
 ![Screenshot 2024-04-08 222730](https://github.com/THEIOTGUY/TherapyLLM/assets/102857010/9929f10b-e838-4547-8429-323e19ebcc3b)
 
