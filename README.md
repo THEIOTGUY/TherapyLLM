@@ -38,10 +38,29 @@ The study titled "AI-based Therapist using finetuned LLM" presents a new way to 
 * We will use Omni-Verse Audio2Face for visual graphics (i.e Animations).
 * We can use omniclientpython.py or raspberrypi_Client.py as input methods for LLM
 
+### Webpage Screenshots:
 
 
+![Screenshot 2024-04-08 222730](https://github.com/THEIOTGUY/TherapyLLM/assets/102857010/9929f10b-e838-4547-8429-323e19ebcc3b)
 
+### Therapy Report : (Therapy Report will be created in pdf and will be ready to download)
 
+Therapy Session Report:
+Therapy Session Report
+Client: Ayush
+Date: 09 April 2024
+Therapist: Suzan
+
+Presenting Concerns: Ayush presented for therapy today reporting the death of a close friend last week. He expressed feeling a range of emotions including sadness, anger, and confusion.
+Client Narrative: Ayush described his friend as being a very important person in his life. They shared many activities and confided in each other. He spoke about the suddenness of the death and how he is struggling to come to terms with it. Ayush also mentioned feeling overwhelmed by the emotions he is experiencing.
+Assessment: Ayush is in the early stages of grief following the loss of his close friend. It is normal to experience a wide range of emotions during this time.
+Treatment Plan:
+Validation: The therapist validated Ayush's emotions and let him know that it is okay to feel sad, angry, confused, or any other emotions that come up.
+Psychoeducation: The therapist provided Ayush with information about the grieving process and what to expect in the coming weeks and months.
+Coping Skills: The therapist discussed coping skills that Ayush can use to manage his difficult emotions, such as relaxation techniques, journaling, and spending time with supportive loved ones.
+Support System: The therapist encouraged Ayush to reach out to his support system for comfort and understanding.
+Prognosis: With support and therapy, Ayush is expected to gradually heal from this loss. However, grief is a personal process and there is no set timeline for healing.
+Next Steps: Ayush will be scheduled for a follow-up session in one week to discuss his progress and continue working through his grief.
 
 
 
